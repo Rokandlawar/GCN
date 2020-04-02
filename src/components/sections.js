@@ -72,15 +72,12 @@ function handleFieldChange(state, action) {
                 }, [])
             }
         }
-
     }
-
-
 }
 
 
 export default function useSections(props) {
-    const { components, layout, values, effects, actions, mapActionsToEffects, extraProps, sharedProps, dispatchSharedValueChange, sections } = props
+    const { components, layout, values, effects, actions, conditions, extraProps, sharedProps, dispatchSharedValueChange, sections } = props
     const { crud } = extraProps || {}
     const layoutType = layout.type
     const sectionType = sections.type
@@ -99,10 +96,10 @@ export default function useSections(props) {
                 values: results
             })
         })
-        if (mapActionsToEffects['init']) {
+        if (conditions['init']) {
             handleEffectUpdates(
                 handleActionsToEffects({
-                    mapCurrentActionsToEffects: mapActionsToEffects['init'],
+                    conditions: conditions['init'],
                     fieldValues: fieldValues,
                     actions: actions,
                     effects: effects
@@ -123,10 +120,10 @@ export default function useSections(props) {
 
     const handleFieldValue = (e) => {
         const { name, value, checked } = e.target
-        if (mapActionsToEffects.change[name]) {
+        if (conditions.change[name]) {
             handleEffectUpdates(
                 handleActionsToEffects({
-                    mapCurrentActionsToEffects: mapActionsToEffects.change[name],
+                    conditions: conditions.change[name],
                     fieldValues: { ...fieldValues, [name]: value },
                     actions: actions,
                     effects: effects

@@ -1152,7 +1152,7 @@ const switchusersconfig = {
     //laneconfig,
     //HighwayAADT,
     //'TIAVolumeThresolds'
-    mapActionsToEffects: {
+    conditions: {
         change: {
             'laneconfig': {
                 check: [1.1],

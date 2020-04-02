@@ -26,7 +26,7 @@ function handleSharedValues(state, action) {
 
 
 export default function useContainer(props) {
-    const { components, layout, sharedProps, mapSharedProps, effects, actions, mapActionsToEffects, extraProps } = props
+    const { components, layout, sharedProps, mapSharedProps, effects, actions, conditions, extraProps } = props
     const { layoutType } = layout
 
     const [fieldsLayout, setFieldsLayout] = useState(layout)
@@ -42,9 +42,9 @@ export default function useContainer(props) {
 
 
     useEffect(() => {
-        if (mapActionsToEffects && mapActionsToEffects['init']) {
+        if (conditions && conditions['init']) {
             handleActionsToEffects({
-                mapCurrentActionsToEffects: mapActionsToEffects['init'],
+                mapCurrentActionsToEffects: conditions['init'],
                 fieldValues: null,
                 actions: actions,
                 effects: effects,

@@ -6,17 +6,19 @@ import Button from '../components/button'
 import Grid from '../components/grid'
 import useForm from '../components/form'
 import useContainer from '../components/container'
+import useNetwork from '../components/network'
 
-
-const fieldTypes = {
+export const fieldTypes = {
     dropdown: Dropdown,
     textfield: TextField,
     checkbox: Checkbox,
     button: Button,
-    grid: Grid,
-    // form: Form,
-    // container: Container
+    grid: Grid
 }
-export default fieldTypes
 
+export const hookTypes = {
+    useForm: useForm,
+    useContainer: useContainer,
+    useNetwork: useNetwork
+}
 

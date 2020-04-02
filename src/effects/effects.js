@@ -1,18 +1,15 @@
 import React, { useState } from "react"
 import { createRequest, requestApi } from '../helpers/rest'
 
-export const handleActionsToEffects = ({ mapCurrentActionsToEffects, fieldValues, actions, effects }) => {
-    const { check, uncheck, run } = mapCurrentActionsToEffects
+export const handleActionsToEffects = ({ conditions, fieldValues }) => {
+    const { check, uncheck, run } = conditions
     const val = check ? check.every(each => {
-        return actions[each].every(e => {
-            return handleRules(e, fieldValues)
-        })
-
+        return handleRules(each, fieldValues)
     }) : true
 
     if (val || uncheck) {
         return run.map(each => {
-            const temp = handleEffects(effects[each], fieldValues, val)
+            const temp = handleEffects(each, fieldValues, val)
             console.log('handleEffects', temp)
             return temp
         }).reduce((accum, each) => {
@@ -25,57 +22,54 @@ export const handleActionsToEffects = ({ mapCurrentActionsToEffects, fieldValues
 }
 
 export const handleEffects = (fieldEffects, fieldValues, status) => {
-    return fieldEffects.map(each => {
-        const { type, name, read, enable, disable, show, hide } = each
-        switch (type) {
-            case 'load':
-                return handleLoad(read, fieldValues).then(res => {
-                    return {
-                        key: name,
-                        type: 'prop',
-                        result: res
-                    }
-                })
-            case 'enable':
+    const { type, name, read, enable, disable, show, hide } = fieldEffects
+    switch (type) {
+        case 'load':
+            return handleLoad(read, fieldValues).then(res => {
                 return {
                     key: name,
                     type: 'prop',
-                    result: handleEnable(enable)
+                    result: res
                 }
-            case 'disable':
-                return {
-                    key: name,
-                    type: 'prop',
-                    result: handleDisable(disable)
-                }
-            case 'show':
-                return {
-                    key: name,
-                    type: 'layout',
-                    result: handleShow()
-                }
-            case 'clear':
-                return {
-                    key: name,
-                    type: 'value',
-                    result: { value: '' }
-                }
-            case 'clearItems':
-                return {
-                    key: name,
-                    type: 'prop',
-                    result: { items: [] }
-                }
-            case 'check':
-                //console.log('fieldEffects[status]',fieldEffects[status],fieldEffects,status)
-                return {
-                    key: name,
-                    type: 'value',
-                    result: { value: each[status] }
-                }
-        }
-    })
-
+            })
+        case 'enable':
+            return {
+                key: name,
+                type: 'prop',
+                result: handleEnable(enable)
+            }
+        case 'disable':
+            return {
+                key: name,
+                type: 'prop',
+                result: handleDisable(disable)
+            }
+        case 'show':
+            return {
+                key: name,
+                type: 'layout',
+                result: handleShow()
+            }
+        case 'clear':
+            return {
+                key: name,
+                type: 'value',
+                result: { value: '' }
+            }
+        case 'clearItems':
+            return {
+                key: name,
+                type: 'prop',
+                result: { items: [] }
+            }
+        case 'check':
+            //console.log('fieldEffects[status]',fieldEffects[status],fieldEffects,status)
+            return {
+                key: name,
+                type: 'value',
+                result: { value: fieldEffects[status] }
+            }
+    }
 }
 
 export const handleRules = (fieldRules, fieldValues) => {

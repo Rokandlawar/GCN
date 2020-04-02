@@ -4,101 +4,98 @@ const switchusersconfig = {
     "type": "form",
     "key": "switchusers",
     "name": "switchuserssettings",
-    // extraProps: {
-    //     "crud": {
-    //         "read": [{
-    //             //"url": "http://localhost:9001/api/SitePermitTypes",
-    //             "url": `${AdminConfig}/api/SitePermitTypes/{routeid}`,
-    //             type: 'get',
-    //             "routeProps": [{
-    //                 "name": "routeid"
-    //             }]
-    //         }],
-    //         "update": [{
-    //             //"url": "http://localhost:9001/api/SitePermitTypes/Update"
-    //             "url": `${AdminConfig}/api/SitePermitTypes/Update`,
-    //             type: 'put'
-    //         }]
-    //     }
-    // },
     layout: {
         group: [
             {
                 order: 0,
                 type: 'div',
                 className: 'row',
-                components: ['county', 'user', 'role']
+                components: [
+                    {
+                        name: 'county',
+                        type: 'div',
+                        className: 'col-4',
+                        sub: {
+                            type: 'div',
+                            className: 'col-4',
+                        }
+                    },
+                    {
+                        name: 'user',
+                        type: 'div',
+                        className: 'col-4',
+                        sub: {
+                            type: 'div',
+                            className: 'col-4'
+                        }
+                    },
+                    {
+                        type: 'div',
+                        className: 'col-4',
+                        group: [
+                            {
+                                order: 0,
+                                type: 'div',
+                                className: 'row',
+                                components: [
+                                    {
+                                        name: 'role',
+                                        type: 'div',
+                                        className: 'col-4',
+                                        sub: {
+                                            type: 'div',
+                                            className: 'col-4',
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
 
             },
             {
                 order: 1,
                 type: 'div',
                 className: 'row',
-                components: ['currentlyassigned', 'futureworkflow']
+                components: [
+                    {
+                        name: 'currentlyassigned',
+                        type: 'div',
+                        className: 'col-4',
+                        sub: {
+                            type: 'div',
+                            className: 'col-4'
+                        }
+                    },
+                    {
+                        name: 'futureworkflow',
+                        type: 'div',
+                        className: 'col-4',
+                        sub: {
+                            type: 'div',
+                            className: 'col-4'
+                        }
+                    }
+                ]
             },
             {
                 order: 2,
                 type: 'div',
                 className: 'row',
-                components: ['switchuserbtn']
+                components: [
+                    {
+                        name: 'switchuserbtn',
+                        type: 'div',
+                        className: 'col-4',
+                        sub: {
+                            type: 'div',
+                            className: 'col-4'
+                        }
+                    }
+                ]
             }
-
         ],
-
-        county: {
-            order: 0,
-            type: 'div',
-            className: 'col-4',
-            sub: {
-                type: 'div',
-                className: 'col-4',
-            }
-        },
-        user: {
-            order: 1,
-            type: 'div',
-            className: 'col-4',
-            sub: {
-                type: 'div',
-                className: 'col-4'
-            }
-        },
-        role: {
-            order: 2,
-            type: 'div',
-            className: 'col-4',
-            sub: {
-                type: 'div',
-                className: 'col-4',
-            }
-        },
-        currentlyassigned: {
-            order: 3,
-            type: 'div',
-            className: 'col-4',
-            sub: {
-                type: 'div',
-                className: 'col-4'
-            }
-        },
-        futureworkflow: {
-            order: 4,
-            type: 'div',
-            className: 'col-4',
-            sub: {
-                type: 'div',
-                className: 'col-4'
-            }
-        },
-        switchuserbtn: {
-            order: 5,
-            type: 'div',
-            className: 'col-4',
-            sub: {
-                type: 'div',
-                className: 'col-4'
-            }
-        }
     },
     values: {
         county: '',
@@ -194,240 +191,188 @@ const switchusersconfig = {
 
         }
     },
-    mapActionsToEffects: {
-        init: {
-            run: [1]
+    network:{
+        init:{
+            run: [
+                {
+                    type: 'load',
+                    name: 'county',
+                    "read": [
+                        {
+                            url: `${Admin}/api/Sites/All/Active`,
+                            type: 'get',
+                            saveAs: {
+                                key: 'items'
+                            }
+                        }
+                    ]
+                }
+            ]  
         },
         change: {
             'county': {
-                run: [2]
+                run: [
+                    {
+                        type: 'load',
+                        name: 'user',
+                        "read": [
+                            {
+                                url: `${Admin}/api/UPAUsers/UsersBySiteId/{siteid}`,
+                                type: 'get',
+                                matchProps: [{
+                                    name: 'county',
+                                    key: 'siteid'
+                                }],
+                                saveAs: {
+                                    key: 'items'
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        type: 'clear',
+                        name: 'user'
+                    },
+                    {
+                        type: 'clear',
+                        name: 'role'
+                    },
+                    {
+                        type: 'clearItems',
+                        name: 'role',
+                        items: []
+                    },
+                    {
+                        type: 'disable',
+                        name: 'switchuserbtn',
+                        disable: {
+                            disabled: true
+                        }
+                    }
+                ]
             },
             'user': {
-                run: [3]
+                run: [
+                    {
+                        type: 'load',
+                        name: 'role',
+                        "read": [
+                            {
+                                url: `${Admin}/api/UPARoles/UserRoles/{userId}`,
+                                type: 'get',
+                                matchProps: [{
+                                    name: 'user',
+                                    key: 'userId'
+                                }],
+                                saveAs: {
+                                    key: 'items'
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        type: 'clear',
+                        name: 'role'
+                    },
+                    {
+                        type: 'disable',
+                        name: 'switchuserbtn',
+                        disable: {
+                            disabled: true
+                        }
+                    }
+                ]
             },
             'role': {
-                run: [4]
-            },
+                run: [
+                    {
+                        type: 'enable',
+                        name: 'switchuserbtn',
+                        enable: {
+                            disabled: false
+                        }
+                    }
+                ]
+            }
+        },
+    },
+    conditions: {
+        change: {
             'currentlyassigned': {
-                check: [8],
+                check: [
+                    {
+                        condition: 'AND',
+                        rules: [
+                            {
+                                name: 'county',
+                                type: 'value'
+                            },
+                            {
+                                name: 'user',
+                                type: 'value'
+                            },
+                            {
+                                name: 'role',
+                                type: 'value'
+                            },
+                            {
+                                condition: 'OR',
+                                rules: [
+                                    {
+                                        name: 'currentlyassigned',
+                                        type: 'check',
+                                        value: true
+                                    },
+                                    {
+                                        name: 'futureworkflow',
+                                        type: 'check'
+                                    }
+                                ]
+                            }
+        
+                        ]
+                    }
+                ],
                 run: []
             },
             'futureworkflow': {
-                check: [8],
-                run: []
-            }
-        },
-        click: {
-            'switchuserbtn': {
-                check: [7],
-                run: [7]
-            }
-        }
-    },
-    actions: {
-        1: [
-            {
-                type: 'init'
-            }
-        ],
-        2: [
-            {
-                type: 'change',
-                name: 'county'
-            }
-        ],
-        3: [
-            {
-                type: 'change',
-                name: 'user'
-            }
-        ],
-        4: [
-            {
-                type: 'change',
-                name: 'role'
-            }
-        ],
-        5: [
-            {
-                type: 'change',
-                name: 'futureWorkFlow'
-            }
-        ],
-        6: [
-            {
-                type: 'change',
-                name: 'currentlyassigned'
-            }
-        ],
-        7: [
-            {
-                type: 'click',
-                name: 'switchuserbtn'
-            }
-        ],
-        8: [
-            {
-                condition: 'AND',
-                rules: [
+                check: [
                     {
-                        name: 'county',
-                        type: 'value'
-                    },
-                    {
-                        name: 'user',
-                        type: 'value'
-                    },
-                    {
-                        name: 'role',
-                        type: 'value'
-                    },
-                    {
-                        condition: 'OR',
+                        condition: 'AND',
                         rules: [
                             {
-                                name: 'currentlyassigned',
-                                type: 'check',
-                                value: true
+                                name: 'county',
+                                type: 'value'
                             },
                             {
-                                name: 'futureworkflow',
-                                type: 'check'
+                                name: 'user',
+                                type: 'value'
+                            },
+                            {
+                                name: 'role',
+                                type: 'value'
+                            },
+                            {
+                                condition: 'OR',
+                                rules: [
+                                    {
+                                        name: 'currentlyassigned',
+                                        type: 'check',
+                                        value: true
+                                    },
+                                    {
+                                        name: 'futureworkflow',
+                                        type: 'check'
+                                    }
+                                ]
                             }
+        
                         ]
                     }
-
-                ]
+                ],
+                run: []
             }
-        ]
-    },
-    effects: {
-        1: [
-            {
-                type: 'load',
-                name: 'county',
-                "read": [
-                    {
-                        url: `${Admin}/api/Sites/All/Active`,
-                        type: 'get',
-                        saveAs: {
-                            key: 'items'
-                        }
-                    }
-                ]
-            },
-        ],
-        2: [
-            {
-                type: 'load',
-                name: 'user',
-                "read": [
-                    {
-                        url: `${Admin}/api/UPAUsers/UsersBySiteId/{siteid}`,
-                        type: 'get',
-                        matchProps: [{
-                            name: 'county',
-                            key: 'siteid'
-                        }],
-                        saveAs: {
-                            key: 'items'
-                        }
-                    }
-                ]
-            },
-            {
-                type: 'clear',
-                name: 'user'
-            },
-            {
-                type: 'clear',
-                name: 'role'
-            },
-            {
-                type: 'clearItems',
-                name: 'role',
-                items: []
-            },
-            {
-                type: 'disable',
-                name: 'switchuserbtn',
-                disable: {
-                    disabled: true
-                }
-            }
-        ],
-        3: [
-            {
-                type: 'load',
-                name: 'role',
-                "read": [
-                    {
-                        url: `${Admin}/api/UPARoles/UserRoles/{userId}`,
-                        type: 'get',
-                        matchProps: [{
-                            name: 'user',
-                            key: 'userId'
-                        }],
-                        saveAs: {
-                            key: 'items'
-                        }
-                    }
-                ]
-            },
-            {
-                type: 'clear',
-                name: 'role'
-            },
-            {
-                type: 'disable',
-                name: 'switchuserbtn',
-                disable: {
-                    disabled: true
-                }
-            }
-        ],
-        4: [
-            {
-                type: 'enable',
-                name: 'switchuserbtn',
-                enable: {
-                    disabled: false
-                }
-            }
-        ],
-        5: [
-            {
-                type: 'load',
-                name: 'grid'
-            }
-        ],
-        7: [
-            {
-                type: 'open',
-                name: 'switchuserbtn'
-            }
-        ],
-        8: [
-            {
-                type: 'clear',
-                name: 'user'
-            }
-        ],
-        9: [
-            {
-                type: 'clear',
-                name: 'role'
-            }
-        ],
-        10: [
-            {
-                type: 'disable',
-                name: 'switchuserbtn',
-                disable: {
-                    disabled: true
-                }
-            }
-        ]
+        }
     }
 }
 
