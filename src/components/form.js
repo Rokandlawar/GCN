@@ -60,11 +60,9 @@ export default function useForm(props) {
     )
 
     const handleEffectUpdates = (res) => {
-        Promise.all(res).then(results => {
-            dispatchFieldsChange({
-                type: 'updates',
-                updates: groupByType(results)
-            })
+        dispatchFieldsChange({
+            type: 'updates',
+            updates: groupByType(res)
         })
     }
 
@@ -99,13 +97,6 @@ export default function useForm(props) {
         }
     }
 
-    const setFieldValuesOrProps = (results) => {
-        dispatchFieldsChange({
-            type: 'updates',
-            updates: groupByType(results)
-        })
-    }
-
     const componentsCreation = (fieldNames, values) => {
         return fieldNames.reduce((accum, each) => {
             const { type, ...otherProps } = fieldProps[each]
@@ -116,8 +107,8 @@ export default function useForm(props) {
     }
 
     const { fieldValues, fieldProps, fieldsLayout } = fields
-    return {
-        layout: <form>
+    return [
+        <form>
             {
                 layoutTypes.default({
                     layout: fieldsLayout,
@@ -125,7 +116,7 @@ export default function useForm(props) {
                 })
             }
         </form>,
-        fieldValues: fieldValues,
-        setFieldValuesOrProps: setFieldValuesOrProps
-    }
+        fieldValues,
+        handleEffectUpdates
+    ]
 }

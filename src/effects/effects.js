@@ -12,11 +12,7 @@ export const handleActionsToEffects = ({ conditions, fieldValues }) => {
             const temp = handleEffects(each, fieldValues, val)
             console.log('handleEffects', temp)
             return temp
-        }).reduce((accum, each) => {
-            const temp = accum.concat(each)
-            console.log('accum', each, temp)
-            return temp
-        }, [])
+        })
     }
     else return []
 }
